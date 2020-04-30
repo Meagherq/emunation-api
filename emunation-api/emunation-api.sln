@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emunation-api", "emunation-api\emunation-api.csproj", "{8B3FCC92-E6F3-4214-8021-429F16A2E11A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emunation.Data", "Emunation.Data\Emunation.Data.csproj", "{011EBA0C-391B-4244-B07C-AF909F2CBA20}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Emunation.API", "Emunation.API\Emunation.API.csproj", "{B0F5C6B1-267F-4A7B-99D4-67A7865E9D91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emunation.Services", "Emunation.Services\Emunation.Services.csproj", "{E67DFA79-B5CE-43DB-A332-BC06C72E38CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8B3FCC92-E6F3-4214-8021-429F16A2E11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B3FCC92-E6F3-4214-8021-429F16A2E11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B3FCC92-E6F3-4214-8021-429F16A2E11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B3FCC92-E6F3-4214-8021-429F16A2E11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{011EBA0C-391B-4244-B07C-AF909F2CBA20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{011EBA0C-391B-4244-B07C-AF909F2CBA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{011EBA0C-391B-4244-B07C-AF909F2CBA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{011EBA0C-391B-4244-B07C-AF909F2CBA20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F5C6B1-267F-4A7B-99D4-67A7865E9D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F5C6B1-267F-4A7B-99D4-67A7865E9D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F5C6B1-267F-4A7B-99D4-67A7865E9D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F5C6B1-267F-4A7B-99D4-67A7865E9D91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E67DFA79-B5CE-43DB-A332-BC06C72E38CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E67DFA79-B5CE-43DB-A332-BC06C72E38CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E67DFA79-B5CE-43DB-A332-BC06C72E38CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E67DFA79-B5CE-43DB-A332-BC06C72E38CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 using System;
 
-namespace emunation_api
+namespace Emunation.API
 {
     public class WeatherForecast
     {

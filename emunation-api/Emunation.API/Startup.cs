@@ -1,22 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+using Emunation.Data.Contexts;
+using Emunation.Data.Models;
+using Emunation.Services.Concretes;
+using Emunation.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
+using System.Linq;
 
-namespace emunation_api
+namespace Emunation.API
 {
     public class Startup
     {
@@ -30,6 +29,8 @@ namespace emunation_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultAuthenticateScheme = AzureADDefaults.AuthenticationScheme;
@@ -45,25 +46,37 @@ namespace emunation_api
                     ValidIssuer = Configuration.GetValue<string>("AzureAd:Issuer"),
                     ValidAudience = Configuration.GetValue<string>("AzureAd:Audience")
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        var objectId = context.Principal.Claims.FirstOrDefault(x => x.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+                        var dbContext = context.HttpContext.RequestServices
+                                .GetRequiredService<DataContext>();
+                        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.ObjectId == Guid.Parse(objectId));
+                        if (user == null)
+                        {
+                            await dbContext.Users.AddAsync(new User { ObjectId = Guid.Parse(objectId) });
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                };
             });
 
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = AzureADDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = AzureADDefaults.AuthenticationScheme;
-            //}).AddAzureAD(options => Configuration.Bind("AzureAd"), options);
-
-
             services.AddMvc();
-            
-            services.AddCors(options => 
-            { 
-                options.AddPolicy("FrontEnd", 
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FrontEnd",
                     builder => builder
                     .WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()); 
+                    .AllowCredentials());
             });
 
             services.AddControllers();
@@ -72,6 +85,8 @@ namespace emunation_api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Emunation API", Version = "v1" });
             });
+
+            services.AddScoped<IGameService, GameService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
