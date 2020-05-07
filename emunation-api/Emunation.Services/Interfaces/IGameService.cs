@@ -8,6 +8,9 @@ namespace Emunation.Services.Interfaces
 {
     public interface IGameService
     {
-        Task<Game> GetGame();
+        Task<Game> GetGames();
+        Task<Game> GetGame(string name);
+
+        void AddGame(Game game);
     }
 }

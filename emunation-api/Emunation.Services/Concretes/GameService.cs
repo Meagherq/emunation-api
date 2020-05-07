@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Emunation.Services.Concretes
 {
@@ -16,11 +18,26 @@ namespace Emunation.Services.Concretes
             _context = context;
         }
 
-        public async Task<Game> GetGame()
+        public async Task<Game> GetGames()
         {
-            var result = await _context.Games;
+            var result = (Game) _context.Games.Where(game => game.Name != null);
+            
 
             return result;
+        }
+        public async Task<Game> GetGame(String name)
+        {
+            var result = (Game) _context.Games.Where(game => game.Name == name);
+            
+
+            return result;
+        }
+        public async void AddGame(Game game)
+        {
+            _context.Games.Add(game);
+            
+
+            return;
         }
     }
 }
