@@ -58,6 +58,7 @@ namespace Emunation.API
                         if (user == null)
                         {
                             await dbContext.Users.AddAsync(new User { ObjectId = Guid.Parse(objectId) });
+                            await dbContext.SaveChangesAsync();
                         }
                         else
                         {

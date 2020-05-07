@@ -19,6 +19,7 @@ namespace Emunation.Data.Contexts
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Game> Games { get; set; }
 
     }
 }

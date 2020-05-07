@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Emunation.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,17 +19,29 @@ namespace emunation_api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IGameService _gameService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IGameService gameService)
         {
             _logger = logger;
+            _gameService = gameService;
         }
 
         [Authorize]
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok("success");
+            var result = _gameService.GetGame();
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return NotFound();
+            }
+         
+            //return Ok("success");
         }
     }
 }
