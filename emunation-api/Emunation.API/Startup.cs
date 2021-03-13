@@ -1,8 +1,11 @@
+using AutoMapper;
 using Emunation.Data.Contexts;
-using Emunation.Data.Models;
+using Emunation.Data.Entities;
+using Emunation.Data.Helpers;
 using Emunation.Services.Concretes;
 using Emunation.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -29,7 +33,22 @@ namespace Emunation.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            IdentityModelEventSource.ShowPII = true;
+
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), options =>
+                {
+                    options.MigrationsAssembly("Emunation.Data");
+                });
+            });
+
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new AutoMapperProfiles());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddAuthentication(sharedOptions =>
             {
@@ -39,7 +58,7 @@ namespace Emunation.API
             .AddJwtBearer("AzureAD", options =>
             {
                 options.Audience = Configuration.GetValue<string>("AzureAd:Audience");
-                options.Authority = Configuration.GetValue<string>("AzureAd:Instance") + Configuration.GetValue<string>("AzureAd:TenantId");
+                options.Authority = Configuration.GetValue<string>("AzureAd:Instance") + Configuration.GetValue<string>("AzureAd:TenantId") + "/v2.0";
 
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
@@ -54,10 +73,10 @@ namespace Emunation.API
                         var objectId = context.Principal.Claims.FirstOrDefault(x => x.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
                         var dbContext = context.HttpContext.RequestServices
                                 .GetRequiredService<DataContext>();
-                        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.ObjectId == Guid.Parse(objectId));
+                        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.UserId == Guid.Parse(objectId));
                         if (user == null)
                         {
-                            await dbContext.Users.AddAsync(new User { ObjectId = Guid.Parse(objectId) });
+                            await dbContext.Users.AddAsync(new User { UserId = Guid.Parse(objectId) });
                             await dbContext.SaveChangesAsync();
                         }
                         else
@@ -74,7 +93,7 @@ namespace Emunation.API
             {
                 options.AddPolicy("FrontEnd",
                     builder => builder
-                    .WithOrigins("http://localhost:4200")
+                    .WithOrigins("https://localhost:3000")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());

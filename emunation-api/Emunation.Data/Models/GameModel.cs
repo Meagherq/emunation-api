@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Emunation.Data.Models
 {
-    public class User
+    public class GameModel
     {
-        public int ID { get; set; }
-        public Guid ObjectId { get; set; }
+        public string Name { get; set; }
+        public string Path { get; set; }
     }
 }

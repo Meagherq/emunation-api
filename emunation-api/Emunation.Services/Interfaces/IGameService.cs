@@ -1,4 +1,5 @@
-﻿using Emunation.Data.Models;
+﻿using Emunation.Data.Entities;
+using Emunation.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,8 @@ namespace Emunation.Services.Interfaces
 {
     public interface IGameService
     {
-        Task<Game> GetGame();
+        Task<UserGameProfileModel> GetGameProfileById();
+        Task<List<UserGameProfileModel>> GetAllGameProfilesByUserId(Guid userId);
+        Task<UserGameProfileModel> AddUserGameProfile(UserGameProfileCreateModel profileToAdd);
     }
 }
