@@ -93,7 +93,7 @@ namespace Emunation.API
             {
                 options.AddPolicy("FrontEnd",
                     builder => builder
-                    .WithOrigins("https://localhost:3000")
+                    .WithOrigins("https://app.emunation.org")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials());
